@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ -t 0 ]
+then
+	echo "Invalid input"
+	echo "Pipe the input"
+	exit
+	data=$1
+else
+	data=$(cat)
+fi
+
+url="https://pastebin.com/api/api_post.php"
+dev_key=${PASTEBIN_KEY}
+
+if [ -z $dev_key ]
+then
+	echo "Export developer key"
+	echo "export PASTEBIN_KEY=< YOUR DEV KEY >"
+	exit
+fi
+
+option="paste"
+
+raw_url="https://pastebin.com/raw/"
+res=$(curl -s -X POST $url -F "api_dev_key=$dev_key" -F "api_option=$option" -F "api_paste_code=$data")
+paste_code=$(echo $res | cut -d '.' -f 2 | cut -d '/' -f 2)
+
+echo $raw_url$paste_code
